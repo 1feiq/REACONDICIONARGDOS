@@ -13,13 +13,15 @@ export default function Terms() {
         Los técnicos con un período de suscripción pagado y vigente acceden al WhatsApp o correo que
         el titular autorizó compartir. La suscripción cuesta ARS 15.000 mensuales y su renovación se
         puede cancelar desde la cuenta. Cancelar la renovación conserva el período pagado, salvo
-        reembolso o reversión del cobro.
+        reembolso o reversión del cobro. El plan permite consultar hasta 30 contactos distintos en
+        cualquier período de 24 horas. No se permite extraerlos masivamente, revenderlos ni
+        utilizarlos para publicidad no solicitada.
       </p>
       <h2 style={{ fontSize: '1.5rem' }}>Acuerdos directos</h2>
       <p>
-        Las partes acuerdan diagnóstico, precio, reparación, compra y entrega. reacondicionargdos no cobra el
-        precio del equipo, no retiene dinero de esa operación ni organiza envíos. Publicar o
-        suscribirse no garantiza ofertas ni trabajos.
+        Las partes acuerdan diagnóstico, precio, reparación, compra y entrega. reacondicionargdos no
+        cobra el precio del equipo, no retiene dinero de esa operación ni organiza envíos. Publicar
+        o suscribirse no garantiza ofertas ni trabajos.
       </p>
       <h2 style={{ fontSize: '1.5rem' }}>Publicaciones y datos</h2>
       <p>
@@ -27,6 +29,9 @@ export default function Terms() {
         contraseñas, información privada ni contactos en fotos o descripciones públicas. El contacto
         se almacena por separado y se muestra al titular, a administración y a técnicos habilitados
         mientras la publicación esté activa. Podés cerrar o archivar tu publicación desde tu cuenta.
+        Registramos qué publicaciones consulta cada técnico y cuándo, para aplicar el límite de
+        acceso. Las fotos son públicas: eliminamos sus metadatos GPS y las reducimos a 1600 píxeles
+        y 2 MB, pero esto no oculta datos personales que aparezcan dentro de la imagen.
       </p>
       <h2 style={{ fontSize: '1.5rem' }}>Estimaciones</h2>
       <p>

@@ -5,6 +5,30 @@ import { deviceSchema, catalogSchema } from '@/lib/validation';
 import { adminDb } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 import type { ActionState } from '@/lib/types';
+import { sanitizePhoto } from '@/lib/photos';
+import { z } from 'zod';
+
+export async function uploadPhoto(form: FormData): Promise<ActionState> {
+  const profile = await getProfile();
+  if (!profile) return { error: 'Ingresá antes de subir fotos.' };
+  const file = form.get('photo');
+  if (!(file instanceof File) || file.size > 2 * 1024 * 1024)
+    return { error: 'Cada foto debe pesar como máximo 2 MB.' };
+  try {
+    const bytes = await sanitizePhoto(new Uint8Array(await file.arrayBuffer()));
+    const path = `${profile.id}/${crypto.randomUUID()}.webp`;
+    const { error } = await adminDb()
+      .storage.from('device-photos')
+      .upload(path, bytes, { contentType: 'image/webp', upsert: false });
+    if (error) throw error;
+    return { id: path };
+  } catch {
+    return {
+      error: 'No pudimos procesar la foto. Usá una imagen JPG, PNG o WebP válida de hasta 2 MB.',
+    };
+  }
+}
+
 export async function saveDevice(_: ActionState, form: FormData): Promise<ActionState> {
   const client = await db();
   const profile = await getProfile();
@@ -16,29 +40,16 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   if (parsed.data.source === 'admin' && profile.role !== 'admin')
     return { error: 'Esta función es solo para administradores.' };
-  const files = form.getAll('photos').filter((x): x is File => x instanceof File && x.size > 0);
-  if (files.length > 6 || files.some((f) => f.size > 5 * 1024 * 1024))
-    return { error: 'Subí hasta 6 imágenes de 5 MB como máximo cada una.' };
-  const paths: string[] = [];
+  const parsedPaths = z
+    .array(z.string().regex(new RegExp('^' + profile.id + '/[0-9a-f-]{36}\\.webp$')))
+    .max(6)
+    .safeParse(form.getAll('photo_paths'));
+  if (!parsedPaths.success) return { error: 'Subí hasta 6 fotos válidas.' };
+  const paths = parsedPaths.data;
   try {
-    for (const file of files) {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      const jpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
-      const png = bytes.slice(0, 8).join(',') === '137,80,78,71,13,10,26,10';
-      const webp =
-        new TextDecoder().decode(bytes.slice(0, 4)) === 'RIFF' &&
-        new TextDecoder().decode(bytes.slice(8, 12)) === 'WEBP';
-      if (!jpeg && !png && !webp) throw new Error('Usá imágenes JPG, PNG o WebP válidas.');
-      const ext = jpeg ? 'jpg' : png ? 'png' : 'webp';
-      const path = `${profile.id}/${crypto.randomUUID()}.${ext}`;
-      const { error } = await client.storage
-        .from('device-photos')
-        .upload(path, bytes, {
-          contentType: jpeg ? 'image/jpeg' : png ? 'image/png' : 'image/webp',
-          upsert: false,
-        });
-      if (error) throw new Error('No pudimos subir una foto. Intentá nuevamente.');
-      paths.push(path);
+    for (const path of paths) {
+      const { error } = await adminDb().storage.from('device-photos').info(path);
+      if (error) throw new Error('Faltan fotos por subir. Intentá nuevamente.');
     }
     const { data, error } = await client.rpc('save_device', {
       p: { ...parsed.data, photo_paths: paths },
@@ -57,7 +68,7 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
       id: data,
     };
   } catch (error) {
-    if (paths.length) await client.storage.from('device-photos').remove(paths);
+    // shortcut: abandoned uploads remain until a retention/cleanup job is configured before launch.
     return { error: error instanceof Error ? error.message : 'No pudimos guardar la publicación.' };
   }
 }

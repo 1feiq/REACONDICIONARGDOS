@@ -5,6 +5,7 @@ import { getDevice } from '@/lib/data';
 import { db } from '@/lib/supabase/server';
 import { faults, intents, money, MONTHLY_ARS } from '@/lib/config';
 import { DeviceVisual } from '@/components/device-card';
+import { ContactReveal } from '@/components/contact-reveal';
 export const dynamic = 'force-dynamic';
 export default async function Detail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -80,6 +81,8 @@ export default async function Detail({ params }: { params: Promise<{ id: string 
                 )}
               </div>
             </div>
+          ) : device.source !== 'demo' ? (
+            <ContactReveal id={id} />
           ) : (
             <div className="contact-paywall">
               <Lock size={26} />

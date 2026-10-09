@@ -1,8 +1,10 @@
 'use client';
 import { useActionState } from 'react';
 import Link from 'next/link';
-import { saveDevice } from '@/app/actions/devices';
+import { saveDevice, uploadPhoto } from '@/app/actions/devices';
 import { categories, intents, faults } from '@/lib/config';
+import { preparePhoto } from '@/lib/prepare-photo';
+import type { ActionState } from '@/lib/types';
 export function DeviceForm({
   admin = false,
   initialModel = '',
@@ -12,7 +14,24 @@ export function DeviceForm({
   initialModel?: string;
   initialFault?: string;
 }) {
-  const [state, action, pending] = useActionState(saveDevice, {});
+  const [state, action, pending] = useActionState<ActionState, FormData>(async (previous, form) => {
+    const files = form.getAll('photos').filter((f): f is File => f instanceof File && f.size > 0);
+    if (files.length > 6) return { error: 'Elegí hasta 6 fotos.' };
+    form.delete('photos');
+    form.delete('photo_paths');
+    try {
+      for (const file of files) {
+        const photo = new FormData();
+        photo.set('photo', await preparePhoto(file), 'photo.webp');
+        const uploaded = await uploadPhoto(photo);
+        if (!uploaded.id) return { error: uploaded.error ?? 'No pudimos subir la foto.' };
+        form.append('photo_paths', uploaded.id);
+      }
+      return await saveDevice(previous, form);
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'No pudimos procesar las fotos.' };
+    }
+  }, {});
   return (
     <form action={action}>
       <input type="hidden" name="source" value={admin ? 'admin' : 'usuario'} />
@@ -81,8 +100,8 @@ export function DeviceForm({
         Fotos del equipo
         <input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple />
         <small>
-          Hasta 6 fotos JPG, PNG o WebP, de 5 MB cada una. Evitá datos personales, ubicaciones y
-          capturas con teléfonos.
+          Hasta 6 fotos. Las optimizamos a 1600 px y hasta 2 MB por imagen, quitando los metadatos
+          GPS. Evitá datos personales, ubicaciones visibles y capturas con teléfonos.
         </small>
       </label>
       <div className="form-grid">

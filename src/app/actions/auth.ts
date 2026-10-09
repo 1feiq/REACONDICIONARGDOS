@@ -23,7 +23,7 @@ export async function sendAccessLink(_: ActionState, form: FormData): Promise<Ac
   const { error } = await client.auth.signInWithOtp({
     email: parsed.data.email,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/confirm`,
       data: { display_name: parsed.data.display_name, role: parsed.data.role },
     },
   });

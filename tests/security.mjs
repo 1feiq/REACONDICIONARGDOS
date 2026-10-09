@@ -19,7 +19,7 @@ async function denied(sql, message) {
 await pg.exec(
   `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;grant usage on schema auth to anon,authenticated,service_role;create table auth.users(id uuid primary key,raw_user_meta_data jsonb);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`,
 );
-for (const file of ['001_marketplace.sql', '003_publication_guards.sql'])
+for (const file of ['001_marketplace.sql', '003_publication_guards.sql', '005_contact_reveals.sql'])
   await pg.exec(readFileSync(new URL(`../supabase/migrations/${file}`, import.meta.url), 'utf8'));
 const owner = '11111111-1111-4111-8111-111111111111',
   tech = '22222222-2222-4222-8222-222222222222',
@@ -152,8 +152,46 @@ await assert.rejects(() => apply('wrong-amount', 'confirmed', 1));
 checks++;
 await login(tech);
 ok(
-  (await pg.query('select whatsapp_e164 from public.device_contacts')).rows.length === 1,
-  'paid technician can read active lead contact',
+  (await pg.query('select * from public.reveal_contact($1)', [device])).rows.length === 1,
+  'paid technician can explicitly reveal an active lead contact',
+);
+ok(
+  (await pg.query('select whatsapp_e164 from public.device_contacts')).rows.length === 0,
+  'paid technician cannot bulk select contacts',
+);
+await denied(
+  'select * from private.contact_reveals',
+  'technician cannot edit or inspect the reveal ledger',
+);
+await pg.query('select * from public.reveal_contact($1)', [device]);
+await login(admin);
+const extraDevices = [];
+for (let i = 0; i < 30; i++)
+  extraDevices.push(
+    (await pg.query('select public.save_device($1) id', [{ ...payload, source: 'admin' }])).rows[0]
+      .id,
+  );
+await login(tech);
+for (const id of extraDevices.slice(0, 29))
+  await pg.query('select * from public.reveal_contact($1)', [id]);
+await denied(
+  `select * from public.reveal_contact('${extraDevices[29]}')`,
+  '31st distinct contact in 24 hours is rejected',
+);
+ok(
+  (await pg.query('select * from public.reveal_contact($1)', [device])).rows.length === 1,
+  'repeat reveal does not consume another slot',
+);
+await login(null);
+await pg.query('reset role');
+await pg.query(
+  "update private.contact_reveals set revealed_at=now()-interval '25 hours' where user_id=$1",
+  [tech],
+);
+await login(tech);
+ok(
+  (await pg.query('select * from public.reveal_contact($1)', [extraDevices[29]])).rows.length === 1,
+  'quota resets as reveals leave the rolling window',
 );
 await denied(
   `select public.apply_payment('${sub}','forged',15000,'ARS',now(),now()+interval '1 month','confirmed')`,
@@ -166,13 +204,17 @@ ok(
   (await pg.query('select whatsapp_e164 from public.device_contacts')).rows.length === 0,
   'closed lead contact is hidden from paid technician',
 );
+await denied(
+  `select * from public.reveal_contact('${device}')`,
+  'closed contact cannot be explicitly revealed',
+);
 await login(owner);
 await pg.query('select public.set_device_status($1,$2)', [device, 'publicado']);
 await login(null, 'service_role');
 await pg.query(`update public.subscriptions set status='canceled' where id=$1`, [sub]);
 await login(tech);
 ok(
-  (await pg.query('select whatsapp_e164 from public.device_contacts')).rows.length === 1,
+  (await pg.query('select * from public.reveal_contact($1)', [device])).rows.length === 1,
   'canceling renewal preserves a paid period',
 );
 await login(null, 'service_role');
@@ -182,6 +224,10 @@ await login(tech);
 ok(
   (await pg.query('select whatsapp_e164 from public.device_contacts')).rows.length === 0,
   'refund revokes access and out-of-order approval cannot restore it',
+);
+await denied(
+  `select * from public.reveal_contact('${device}')`,
+  'refunded technician cannot reuse a prior reveal',
 );
 await login(null, 'service_role');
 await apply('expired', 'confirmed', 15000, '2020-01-01T00:00:00Z', '2020-02-01T00:00:00Z');

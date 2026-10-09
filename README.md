@@ -1,6 +1,6 @@
 # reacondicionargdos
 
-Dominio de producción del titular: https://reacondicionargdos.com. Pendiente conectar hosting y DNS. Al desplegar, configurar `APP_URL=https://reacondicionargdos.com`, autorizar `https://reacondicionargdos.com/auth/callback` en Supabase y usar `https://reacondicionargdos.com/api/webhooks/mercadopago` para el webhook.
+Dominio de producción del titular: https://reacondicionargdos.com. Pendiente conectar hosting y DNS. Al desplegar, configurar `APP_URL=https://reacondicionargdos.com`, autorizar `https://reacondicionargdos.com/auth/confirm` en Supabase y usar `https://reacondicionargdos.com/api/webhooks/mercadopago` para el webhook.
 
 MVP de un marketplace inverso para vender equipos con fallas o contratar su reparación. Next.js App Router, TypeScript, Tailwind CSS y Supabase. Suscripción técnica: ARS 15.000/mes mediante Mercado Pago. Publicar equipos es gratuito.
 
@@ -10,7 +10,7 @@ MVP de un marketplace inverso para vender equipos con fallas o contratar su repa
 - Migraciones de PostgreSQL y políticas de acceso incluidas. Los contactos se protegen en la base; no se envían al navegador de un visitante sin permisos.
 - Sin Supabase configurado, se muestra una vista previa explícita con tres equipos ficticios y un ejemplo de cotización. No se simulan registros, pagos ni publicaciones persistidas.
 - Los valores del ejemplo NO son cotizaciones de mercado. No se insertan en la base real.
-- No se han conectado cuentas externas ni ejecutado cobros. La prueba integral de Supabase Auth/Storage y Mercado Pago debe completarse antes de habilitar producción.
+- Supabase conectado al proyecto `nymvbuhlaaerbgkbtibk`. Migraciones 001–005 aplicadas. Verificados acceso público, bloqueo de contactos anónimos, límite de Storage, bloqueo de cargas directas y token de acceso desde un cliente nuevo. Sin cobros reales ni despliegue todavía.
 - Stripe/USDT no están implementados: el titular confirmó que solo tiene cuenta argentina en Mercado Pago. Queda pendiente elegir un proveedor crypto elegible. No se promete USDT en la interfaz.
 
 ## Ejecutar
@@ -41,8 +41,8 @@ La prueba de seguridad ejecuta las migraciones sobre PostgreSQL embebido (PGlite
 1. Crear una cuenta y un proyecto propio de Supabase. Elegir la región disponible más cercana a Rosario. Guardar la contraseña de base de datos en un gestor de contraseñas.
 2. Ejecutar en SQL Editor, en orden, los archivos de `supabase/migrations/`. Son migraciones iniciales para un proyecto nuevo; no ejecutarlas repetidamente ni sobre un proyecto que ya tenga tablas homónimas sin revisión.
 3. Desde la configuración/API del proyecto, copiar la URL pública y la clave publishable a `.env.local`. La clave `SUPABASE_SERVICE_ROLE_KEY` es privada, solo servidor, y nunca debe tener prefijo `NEXT_PUBLIC_`.
-4. En Authentication > URL Configuration, configurar Site URL con la URL real de la web y permitir su `/auth/callback`. Para desarrollo autorizar `http://127.0.0.1:3000/auth/callback` y usar el mismo origen en `APP_URL`.
-5. Habilitar Email para los enlaces de acceso. Configurar SMTP propio y sus límites de envío antes de aceptar registros públicos; el servicio de correo predeterminado de Supabase tiene restricciones.
+4. En Authentication > URL Configuration, configurar Site URL con la URL real de la web y permitir su `/auth/confirm`. Para desarrollo autorizar `http://127.0.0.1:3000/auth/confirm` y usar el mismo origen en `APP_URL`.
+5. En Authentication > Emails, copiar `supabase/templates/magic-link.html` a las plantillas Magic Link y Confirm signup. El enlace usa TokenHash y `/auth/confirm`; un POST explícito lo consume sin depender de cookies PKCE de otro dispositivo. Mantener habilitado Email para los enlaces de acceso. Configurar SMTP propio y sus límites de envío antes de aceptar registros públicos; el servicio de correo predeterminado de Supabase tiene restricciones.
 6. Registrar tu cuenta usando el formulario de la aplicación. Obtener su UUID en Authentication > Users y ejecutar, desde SQL Editor: `update public.users set role = 'admin' where id = 'UUID_DE_TU_USUARIO';`. Nunca habilitar la elección de admin en el registro público.
 7. Ingresar en `/admin` para cargar publicaciones autorizadas y `/admin/cotizador` para agregar valores reales. No se necesitan cuentas ficticias para los titulares de las publicaciones manuales.
 
@@ -75,7 +75,7 @@ Vercel Hobby se destina a proyectos personales no comerciales; revisar Pro u otr
 
 ## Pendientes de lanzamiento
 
-- Cuenta/proyecto Supabase, conexión y pruebas reales de Auth/Storage.
+- SMTP propio y prueba de entrega del correo de acceso; prueba de la interfaz de publicación con seis fotos.
 - Cuenta de hosting y despliegue HTTPS.
 - Credenciales de Mercado Pago y prueba completa con sus cuentas de prueba.
 - Datos del responsable y canal real de atención/privacidad para completar las condiciones.
@@ -91,3 +91,20 @@ Limitaciones deliberadas: el feed carga las 90 publicaciones activas más recien
 - [Mercado Pago Suscripciones](https://www.mercadopago.com.ar/developers/es/docs/subscriptions/overview)
 - [Mercado Pago Webhooks](https://www.mercadopago.com.ar/developers/es/docs/subscriptions/additional-content/your-integrations/notifications/webhooks)
 - [Stripe: disponibilidad](https://stripe.com/global)
+
+## Protección de imágenes y contactos
+
+- Hasta seis fotos por publicación. El navegador las reduce a 1600 px (lado mayor) y 2 MiB; se envían individualmente para respetar los límites del hosting.
+- El servidor decodifica y vuelve a generar WebP, eliminando EXIF/GPS. Storage limita cada archivo a 2 MiB; las cargas directas de usuarios están revocadas para impedir saltarse el procesamiento.
+- Los técnicos no pueden consultar la tabla de contactos directamente. La función reveal_contact verifica suscripción y estado, y permite 30 contactos distintos en una ventana móvil de 24 horas. La cuota se serializa por usuario para impedir carreras.
+- El acceso del dueño y del administrador se conserva. Un contacto ya consultado vuelve a requerir suscripción vigente; cerrar la publicación bloquea nuevas consultas del técnico.
+- Los límites reducen la extracción masiva; no impiden copiar un contacto obtenido legítimamente ni el uso coordinado de varias cuentas.
+- Las cargas que no terminan en una publicación pueden dejar fotos huérfanas; antes del lanzamiento, definir su limpieza y la política de conservación.
+
+## Estado verificado el 9 de octubre de 2026
+
+- Build de producción y TypeScript correctos; 40 verificaciones de seguridad/cobros y pruebas de fotos correctas.
+- En Supabase real: Storage rechaza más de 2 MiB, bloquea uploads directos, acepta WebP saneado; token válido desde cliente nuevo y rechazado al reutilizarlo; cuenta sin pago no accede a contactos. La cuenta y foto de ensayo fueron eliminadas y no se enviaron correos.
+- El flujo con TokenHash está implementado y probado a nivel de Auth. Activarlo en los correos requiere configurar SMTP o Pro: el panel actual no permite editar las plantillas sin uno de ellos. Mientras tanto sigue funcionando el callback PKCE para el navegador original.
+- Vercel y Mercado Pago quedaron bloqueados por permisos guardados del navegador. No se desplegó, no se eliminó el sitio viejo y no hubo cobros.
+- Pendientes: responsable/correo de privacidad, política y limpieza de fotos abandonadas, SMTP, prueba UI completa, alertas de publicaciones, despliegue y ensayo de pago real.

@@ -7,7 +7,7 @@
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/security.mjs",
+    "test": "node tests/security.mjs && node tests/photos.mjs",
     "dev:portable": "node scripts/dev.mjs"
   },
   "dependencies": {
@@ -18,6 +18,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "server-only": "^0.0.1",
+    "sharp": "0.35.5",
     "zod": "^4.0.0"
   },
   "devDependencies": {

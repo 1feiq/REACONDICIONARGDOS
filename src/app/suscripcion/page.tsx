@@ -56,7 +56,7 @@ export default async function Pricing({
         <p>Una suscripción mensual. Sin comisión por operación.</p>
         <ul>
           {[
-            'Contactos de publicaciones activas',
+            'Hasta 30 contactos distintos cada 24 horas',
             'Equipos para comprar o reparar',
             'WhatsApp o email directo del titular',
             'Cancelación de renovación desde tu cuenta',
