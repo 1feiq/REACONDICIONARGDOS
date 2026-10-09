@@ -62,3 +62,32 @@ export function safeNext(value: string | null) {
     ? value
     : '/cuenta';
 }
+
+export const deviceSpecsSchema = z
+  .object({
+    storage_capacity: z.string().trim().min(1).max(40),
+    physical_condition: z.string().trim().min(1).max(500),
+    power_on: z.enum(['si', 'no', 'desconocido']),
+    screen: z.string().trim().min(1).max(300),
+    battery: z.string().trim().min(1).max(300),
+    motherboard: z.string().trim().min(1).max(300),
+    activation_lock: z.enum(['libre', 'bloqueado', 'desconocido']),
+    previous_repairs: z.string().trim().min(1).max(500),
+    asking_price: z.union([z.literal(''), z.coerce.number().positive().max(999999999)]),
+    accepts_offers: z.boolean(),
+    delivery: z.enum(['presencial', 'envio', 'ambas']),
+  })
+  .refine(
+    (d) =>
+      !/(?:https?:\/\/|www\.|wa\.me|[\w.+-]+@[\w.-]+\.\w{2,}|(?:\+?\d[\s()-]*){8,})/i.test(
+        [
+          d.storage_capacity,
+          d.physical_condition,
+          d.screen,
+          d.battery,
+          d.motherboard,
+          d.previous_repairs,
+        ].join(' '),
+      ),
+    { message: 'No incluyas contactos ni identificadores en los campos públicos.' },
+  );

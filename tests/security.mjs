@@ -253,6 +253,75 @@ ok(
     'publicado',
   'admin can confirm authorization and publish atomically',
 );
+await login(null);
+await pg.exec(
+  'reset role; create schema storage; create table storage.objects(name text primary key,bucket_id text,created_at timestamptz);',
+);
+await pg.exec(
+  readFileSync(new URL('../supabase/migrations/006_photo_cleanup.sql', import.meta.url), 'utf8'),
+);
+const keptPhoto = admin + '/kept.webp',
+  orphanPhoto = admin + '/orphan.webp',
+  freshPhoto = admin + '/fresh.webp';
+await pg.query(
+  "insert into storage.objects values ($1,'device-photos',now()-interval '2 days'),($2,'device-photos',now()-interval '2 days'),($3,'device-photos',now())",
+  [keptPhoto, orphanPhoto, freshPhoto],
+);
+await login(admin);
+await pg.query('select public.save_device($1)', [
+  { ...payload, source: 'admin', status: 'borrador', photo_paths: [keptPhoto] },
+]);
+await denied(
+  'select * from public.claim_abandoned_photos()',
+  'cleanup RPC cannot be called with a user token',
+);
+await login(null, 'service_role');
+const abandoned = (await pg.query('select * from public.claim_abandoned_photos()')).rows;
+ok(
+  abandoned.length === 1 && abandoned[0].path === orphanPhoto,
+  'cleanup preserves referenced and recent photos',
+);
+ok(
+  (await pg.query('select * from public.claim_abandoned_photos()')).rows.length === 1,
+  'failed storage deletions remain retryable',
+);
+await login(admin);
+await assert.rejects(() =>
+  pg.query('select public.save_device($1)', [
+    { ...payload, source: 'admin', photo_paths: [orphanPhoto] },
+  ]),
+);
+checks++;
+console.log('PASS retired photo cannot be attached while deletion is pending');
+await pg.exec('reset role');
+await pg.exec(
+  readFileSync(new URL('../supabase/migrations/007_listing_alerts.sql', import.meta.url), 'utf8'),
+);
+await login(tech);
+await pg.query("insert into public.listing_alerts(user_id,category) values($1,'celular')", [tech]);
+ok(
+  (await pg.query('select * from public.listing_alerts')).rows.length === 1,
+  'user can save their own listing alert',
+);
+await login(other);
+ok(
+  (await pg.query('select * from public.listing_alerts')).rows.length === 0,
+  'other users cannot read alert preferences',
+);
+await denied(
+  `insert into public.listing_alerts(user_id) values('${owner}')`,
+  'cannot enable alerts for another person',
+);
+await login(tech);
+await denied(
+  "update public.listing_alerts set category='invalid'",
+  'alert category constrained in database',
+);
+await pg.query('update public.listing_alerts set enabled=false');
+ok(
+  (await pg.query('select enabled from public.listing_alerts')).rows[0].enabled === false,
+  'user can disable listing alerts',
+);
 const now = Date.now(),
   ts = String(now),
   id = 'abc123',

@@ -4,6 +4,7 @@ import { getProfile } from '@/lib/data';
 import { db } from '@/lib/supabase/server';
 import { signOut } from '@/app/actions/auth';
 import { StatusForm } from '@/components/status-form';
+import { ListingAlerts } from '@/components/listing-alerts';
 export default async function Account() {
   const profile = await getProfile();
   if (!profile) redirect('/ingresar');
@@ -32,12 +33,19 @@ export default async function Account() {
         <Link className="button secondary" href="/suscripcion">
           Mi suscripción
         </Link>
+        <Link className="button secondary" href="/operaciones">
+          Compras, ventas y reclamos
+        </Link>
+        <Link className="button secondary" href="/verificacion">
+          Verificación
+        </Link>
         {profile.role === 'admin' && (
           <Link className="button secondary" href="/admin">
             Administración
           </Link>
         )}
       </div>
+      <ListingAlerts userId={profile.id} />
       <h2>Mis publicaciones</h2>
       <div className="admin-list">
         {devices?.map((d) => (

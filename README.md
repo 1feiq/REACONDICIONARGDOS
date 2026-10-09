@@ -2,7 +2,7 @@
 
 Dominio de producción del titular: https://reacondicionargdos.com. Pendiente conectar hosting y DNS. Al desplegar, configurar `APP_URL=https://reacondicionargdos.com`, autorizar `https://reacondicionargdos.com/auth/confirm` en Supabase y usar `https://reacondicionargdos.com/api/webhooks/mercadopago` para el webhook.
 
-MVP de un marketplace inverso para vender equipos con fallas o contratar su reparación. Next.js App Router, TypeScript, Tailwind CSS y Supabase. Suscripción técnica: ARS 15.000/mes mediante Mercado Pago. Publicar equipos es gratuito.
+MVP de un marketplace inverso para vender equipos con fallas o contratar su reparación. Next.js App Router, TypeScript, Tailwind CSS y Supabase. Suscripción técnica: ARS 10.000/mes (Fundadores: ARS 7.500 por 6 ciclos, primeras 100 cuentas elegibles) mediante Mercado Pago. Publicar equipos es gratuito.
 
 ## Estado de esta entrega
 
@@ -108,3 +108,6 @@ Limitaciones deliberadas: el feed carga las 90 publicaciones activas más recien
 - El flujo con TokenHash está implementado y probado a nivel de Auth. Activarlo en los correos requiere configurar SMTP o Pro: el panel actual no permite editar las plantillas sin uno de ellos. Mientras tanto sigue funcionando el callback PKCE para el navegador original.
 - Vercel y Mercado Pago quedaron bloqueados por permisos guardados del navegador. No se desplegó, no se eliminó el sitio viejo y no hubo cobros.
 - Pendientes: responsable/correo de privacidad, política y limpieza de fotos abandonadas, SMTP, prueba UI completa, alertas de publicaciones, despliegue y ensayo de pago real.
+
+
+Nueva entrega: consultar [ACTIVACION.md](docs/ACTIVACION.md). La nueva contratación Pro y los pagos protegidos están bloqueados en servidor hasta completar sus adaptadores y validar los contratos con proveedores. Las migraciones 008–010 agregan los nuevos módulos.

@@ -1,4 +1,5 @@
 'use client';
+import { DeviceSpecFields } from './device-spec-fields';
 import { useActionState } from 'react';
 import Link from 'next/link';
 import { saveDevice, uploadPhoto } from '@/app/actions/devices';
@@ -96,6 +97,7 @@ export function DeviceForm({
         />
         <small>No incluyas teléfonos, correos ni enlaces en la descripción.</small>
       </label>
+      <DeviceSpecFields />
       <label className="field">
         Fotos del equipo
         <input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple />

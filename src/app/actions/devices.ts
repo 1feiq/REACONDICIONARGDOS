@@ -1,7 +1,7 @@
 'use server';
 import { db } from '@/lib/supabase/server';
 import { getProfile } from '@/lib/data';
-import { deviceSchema, catalogSchema } from '@/lib/validation';
+import { deviceSchema, deviceSpecsSchema, catalogSchema } from '@/lib/validation';
 import { adminDb } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 import type { ActionState } from '@/lib/types';
@@ -46,13 +46,37 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
     .safeParse(form.getAll('photo_paths'));
   if (!parsedPaths.success) return { error: 'Subí hasta 6 fotos válidas.' };
   const paths = parsedPaths.data;
+  const specs = deviceSpecsSchema.safeParse({
+    ...Object.fromEntries(form),
+    accepts_offers: form.get('accepts_offers') === 'on',
+  });
+  if (!specs.success) return { error: specs.error.issues[0].message };
+  if (!paths.length) return { error: 'Subí al menos una fotografía real.' };
+  if (parsed.data.intent !== 'reparar' && !specs.data.asking_price)
+    return { error: 'Indicá el precio solicitado.' };
+  const identifier = String(form.get('identifier') ?? '').trim();
+  const identifierKind = String(form.get('identifier_kind'));
+  if (
+    identifier &&
+    !(
+      (identifierKind === 'imei' && /^\d{15}$/.test(identifier)) ||
+      (identifierKind === 'serial' && /^[A-Za-z0-9-]{5,32}$/.test(identifier))
+    )
+  )
+    return { error: 'Revisá el IMEI (15 dígitos) o número de serie.' };
   try {
     for (const path of paths) {
       const { error } = await adminDb().storage.from('device-photos').info(path);
       if (error) throw new Error('Faltan fotos por subir. Intentá nuevamente.');
     }
     const { data, error } = await client.rpc('save_device', {
-      p: { ...parsed.data, photo_paths: paths },
+      p: {
+        ...parsed.data,
+        photo_paths: paths,
+        specs: specs.data,
+        identifier,
+        identifier_kind: identifierKind,
+      },
     });
     if (error)
       throw new Error('No pudimos guardar la publicación. Revisá los datos e intentá nuevamente.');
@@ -68,9 +92,24 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
       id: data,
     };
   } catch (error) {
-    // shortcut: abandoned uploads remain until a retention/cleanup job is configured before launch.
     return { error: error instanceof Error ? error.message : 'No pudimos guardar la publicación.' };
   }
+}
+
+export async function cleanAbandonedPhotos(_: ActionState, form: FormData): Promise<ActionState> {
+  const profile = await getProfile();
+  if (profile?.role !== 'admin' || form.get('confirm') !== 'on')
+    return { error: 'Solo administración puede confirmar esta limpieza.' };
+  const client = adminDb();
+  const { data, error } = await client.rpc('claim_abandoned_photos');
+  if (error) return { error: 'No pudimos identificar las fotos abandonadas.' };
+  const paths = (data ?? []).map((row: { path: string }) => row.path);
+  if (!paths.length) return { success: 'No hay fotos abandonadas con más de 24 horas.' };
+  const result = await client.storage.from('device-photos').remove(paths);
+  if (result.error) return { error: 'La limpieza no pudo completarse. Podés volver a intentarlo.' };
+  return {
+    success: `Se eliminaron ${paths.length} fotos abandonadas. Podés repetir la limpieza si hay más.`,
+  };
 }
 export async function changeDeviceStatus(_: ActionState, form: FormData): Promise<ActionState> {
   const client = await db();

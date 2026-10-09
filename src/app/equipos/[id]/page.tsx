@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DeviceSafety } from '@/components/device-safety';
 import { notFound } from 'next/navigation';
 import { Lock, MapPin, MessageCircle, Mail } from 'lucide-react';
 import { getDevice } from '@/lib/data';
@@ -54,6 +55,7 @@ export default async function Detail({ params }: { params: Promise<{ id: string 
           <span className="badge green">{intents[device.intent]}</span>
           <h3 style={{ marginTop: 25 }}>{faults[device.fault_code as keyof typeof faults]}</h3>
           <p style={{ whiteSpace: 'pre-wrap' }}>{device.description}</p>
+          <DeviceSafety id={id} owner={device.owner_id} />
           {contact ? (
             <div className="contact-paywall">
               <h3>Contactá a {contact.contact_name}</h3>

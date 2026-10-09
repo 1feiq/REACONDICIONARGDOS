@@ -7,7 +7,7 @@
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/security.mjs && node tests/photos.mjs",
+    "test": "node tests/security.mjs && node tests/photos.mjs && node tests/commerce.mjs",
     "dev:portable": "node scripts/dev.mjs"
   },
   "dependencies": {

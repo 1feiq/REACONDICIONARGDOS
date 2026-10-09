@@ -1,5 +1,5 @@
 export const BRAND = 'reacondicionargdos';
-export const MONTHLY_ARS = 15000;
+export const MONTHLY_ARS = 10000;
 export const money = (value: number) =>
   new Intl.NumberFormat('es-AR', {
     style: 'currency',
@@ -25,3 +25,8 @@ export const faults = {
 } as const;
 export const configured = () =>
   Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
+export const FOUNDER_ARS = 7500;
+// New billing requires a provider adapter that guarantees last-slot pricing and six cycles.
+export const PRO_BILLING_READY = false;
+export const PROTECTED_PURCHASES_READY = false;

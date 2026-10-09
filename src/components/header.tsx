@@ -15,6 +15,7 @@ export function Header() {
         </span>
         <nav aria-label="Navegación principal">
           <Link href="/equipos">Explorar equipos</Link>
+          <Link href="/compra-protegida">Protección</Link>
           <Link href="/suscripcion">Soy técnico</Link>
           <Link href="/cuenta" className="nav-account">
             Mi cuenta

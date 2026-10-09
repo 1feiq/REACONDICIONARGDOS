@@ -37,8 +37,11 @@ export function SubscriptionControls({ id, canceled }: { id: string; canceled: b
         <form action={cancelAction}>
           <input name="id" value={id} type="hidden" />
           <label className="check">
-            <input type="checkbox" required />
-            <span>Quiero detener la renovación mensual.</span>
+            <input name="confirm" type="checkbox" required />
+            <span>
+              Quiero detener la renovación mensual. Pierdo el precio fundador para futuras
+              suscripciones; conservo el período abonado.
+            </span>
           </label>
           <button className="button secondary full" disabled={cancelPending}>
             {cancelPending ? 'Cancelando…' : 'Cancelar renovación'}

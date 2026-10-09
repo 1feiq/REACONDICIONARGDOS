@@ -907,3 +907,8 @@ footer {
     transition: none !important;
   }
 }
+
+/* Long IDs and evidence text must remain usable on mobile. */
+.panel, .notice, .admin-row { overflow-wrap: anywhere; min-width: 0; }
+fieldset.panel { border: 1px solid var(--border, #dce3dc); }
+@media (max-width:720px) { .nav nav { flex-wrap:wrap; } .nav nav > a:not(.button) { display:inline-flex; } }

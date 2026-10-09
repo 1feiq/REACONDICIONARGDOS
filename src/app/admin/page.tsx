@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { db } from '@/lib/supabase/server';
 import { StatusForm } from '@/components/status-form';
 import { ConfirmContact } from '@/components/confirm-contact';
+import { PhotoCleanup } from '@/components/photo-cleanup';
 export default async function Admin() {
   await requireAdmin();
   const client = (await db())!;
@@ -59,6 +60,10 @@ export default async function Admin() {
           </Link>
         </div>
       )}
+      <Link className="button secondary" href="/admin/comercio">
+        Suscripciones, operaciones y seguridad
+      </Link>
+      <PhotoCleanup />
     </div>
   );
 }

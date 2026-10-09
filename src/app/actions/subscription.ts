@@ -4,13 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { getProfile } from '@/lib/data';
 import { adminDb } from '@/lib/supabase/admin';
 import { mp, syncMPSubscription, type MPSubscription } from '@/lib/mercadopago';
-import { MONTHLY_ARS } from '@/lib/config';
+import { MONTHLY_ARS, PRO_BILLING_READY } from '@/lib/config';
 import type { ActionState } from '@/lib/types';
 export async function checkout(_: ActionState): Promise<ActionState> {
   const profile = await getProfile();
   if (profile?.role !== 'tecnico')
     return { error: 'Ingresá con una cuenta de técnico para suscribirte.' };
   if (
+    !PRO_BILLING_READY ||
     process.env.PAYMENTS_ENABLED !== 'true' ||
     !process.env.MERCADOPAGO_ACCESS_TOKEN ||
     !process.env.MERCADOPAGO_WEBHOOK_SECRET ||
@@ -114,6 +115,7 @@ export async function refreshSubscription(_: ActionState): Promise<ActionState> 
 export async function cancelSubscription(_: ActionState, form: FormData): Promise<ActionState> {
   const profile = await getProfile();
   if (!profile) return { error: 'Ingresá a tu cuenta.' };
+  if (form.get('confirm') !== 'on') return { error: 'Confirmá que querés cancelar la renovación.' };
   try {
     const client = adminDb();
     const { data: s, error } = await client
@@ -124,10 +126,10 @@ export async function cancelSubscription(_: ActionState, form: FormData): Promis
       .eq('provider', 'mercadopago')
       .single();
     if (error) throw error;
-    if (s.provider_subscription_id)
-      await mp(`/preapproval/${encodeURIComponent(s.provider_subscription_id)}`, 'PUT', {
-        status: 'cancelled',
-      });
+    if (s.provider_subscription_id) {
+      const remote=await mp<MPSubscription>(`/preapproval/${encodeURIComponent(s.provider_subscription_id)}`, 'PUT', {status:'cancelled'});
+      if(remote.id!==s.provider_subscription_id||remote.status!=='cancelled')throw new Error('cancellation_not_confirmed');
+    }
     const { error: updateError } = await client
       .from('subscriptions')
       .update({ status: 'canceled', canceled_at: new Date().toISOString() })

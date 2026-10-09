@@ -42,12 +42,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <Link href="/equipos">Explorar</Link>
               <Link href="/suscripcion">Para técnicos</Link>
+              <Link href="/politicas">Privacidad y políticas</Link>
               <Link href="/terminos">Cómo funciona y condiciones</Link>
             </div>
             <span>
               Solo conectamos personas.
               <br />
-              Sin comisiones ni envíos.
+              Operaciones directas sin cobertura.
             </span>
           </div>
         </footer>

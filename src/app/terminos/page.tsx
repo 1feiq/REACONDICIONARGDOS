@@ -3,6 +3,9 @@ export default function Terms() {
     <article className="container narrow section">
       <span className="eyebrow">Información de la plataforma</span>
       <h1 style={{ fontSize: '2.8rem' }}>Cómo funciona reacondicionargdos.</h1>
+      <p>
+        <a href="/politicas">Promoción Fundadores, privacidad y borradores de Compra Protegida</a>
+      </p>
       <h2 style={{ fontSize: '1.5rem' }}>Conectamos personas de Rosario</h2>
       <p>
         Podés publicar gratuitamente un celular, notebook o consola para venderlo, repararlo o
@@ -11,11 +14,11 @@ export default function Terms() {
       <h2 style={{ fontSize: '1.5rem' }}>Contacto y suscripción</h2>
       <p>
         Los técnicos con un período de suscripción pagado y vigente acceden al WhatsApp o correo que
-        el titular autorizó compartir. La suscripción cuesta ARS 15.000 mensuales y su renovación se
-        puede cancelar desde la cuenta. Cancelar la renovación conserva el período pagado, salvo
-        reembolso o reversión del cobro. El plan permite consultar hasta 30 contactos distintos en
-        cualquier período de 24 horas. No se permite extraerlos masivamente, revenderlos ni
-        utilizarlos para publicidad no solicitada.
+        el titular autorizó compartir. La suscripción Pro cuesta ARS 10.000 mensuales y su
+        renovación se puede cancelar desde la cuenta. Cancelar la renovación conserva el período
+        pagado, salvo reembolso o reversión del cobro. El plan permite consultar hasta 30 contactos
+        distintos en cualquier período de 24 horas. No se permite extraerlos masivamente,
+        revenderlos ni utilizarlos para publicidad no solicitada.
       </p>
       <h2 style={{ fontSize: '1.5rem' }}>Acuerdos directos</h2>
       <p>
