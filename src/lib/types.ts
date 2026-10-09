@@ -1,0 +1,32 @@
+export type Device = {
+  id: string;
+  category: 'celular' | 'notebook' | 'consola';
+  brand: string;
+  model: string;
+  intent: 'vender' | 'reparar' | 'ambas';
+  fault_code: string;
+  description: string;
+  photo_paths: string[];
+  neighborhood: string | null;
+  created_at: string;
+  status: string;
+  source: string;
+  owner_id?: string | null;
+};
+export type Catalog = {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  fault_code: string;
+  repair_min_ars: number;
+  repair_max_ars: number;
+  resale_broken_min_ars: number;
+  resale_broken_max_ars: number;
+  resale_repaired_min_ars: number;
+  resale_repaired_max_ars: number;
+  assumptions: string;
+  updated_at: string;
+  is_active: boolean;
+};
+export type ActionState = { error?: string; success?: string; id?: string };

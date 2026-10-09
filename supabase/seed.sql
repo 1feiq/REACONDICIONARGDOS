@@ -1,0 +1,2 @@
+-- No fictitious leads or unverified prices are inserted in production.
+-- Populate pricing_catalog from Admin > Cotizador after confirming local prices.
