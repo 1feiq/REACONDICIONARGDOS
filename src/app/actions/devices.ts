@@ -72,6 +72,7 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
     const { data, error } = await client.rpc('save_device', {
       p: {
         ...parsed.data,
+        id:form.get('id'),
         photo_paths: paths,
         specs: specs.data,
         identifier,
@@ -87,7 +88,7 @@ export async function saveDevice(_: ActionState, form: FormData): Promise<Action
     return {
       success:
         parsed.data.status === 'publicado'
-          ? 'Tu publicación ya está disponible.'
+          ? 'Publicación guardada. Será visible cuando administración revise el contenido.'
           : 'Borrador guardado. Para publicarlo, confirmá la autorización desde administración.',
       id: data,
     };

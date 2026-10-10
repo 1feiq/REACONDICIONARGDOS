@@ -3,7 +3,8 @@ import { Check, MapPin, ShieldCheck, Handshake, Recycle } from 'lucide-react';
 import { Quote } from '@/components/quote';
 import { DeviceCard } from '@/components/device-card';
 import { getDevices, getCatalog } from '@/lib/data';
-import { configured, money, MONTHLY_ARS } from '@/lib/config';
+import { configured } from '@/lib/config';
+import { AdPlacement } from '@/components/ad-placement';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
   const [devices, catalog] = await Promise.all([getDevices(), getCatalog()]);
@@ -12,7 +13,7 @@ export default async function Home() {
       <section className="container hero">
         <div>
           <span className="eyebrow">
-            <MapPin size={14} /> Tecnología circular, bien rosarina
+            <MapPin size={14} /> El marketplace gratuito de celulares para reparar
           </span>
           <h1>
             Se rompió.
@@ -21,7 +22,7 @@ export default async function Home() {
           </h1>
           <p className="intro">
             Ese equipo todavía tiene mucho para dar. Vendelo como está o encontrá un técnico de
-            Rosario para volver a usarlo.
+            tu ciudad para volver a usarlo.
           </p>
           <div className="actions">
             <Link className="button" href="/publicar">
@@ -39,7 +40,7 @@ export default async function Home() {
               <Check size={15} /> Trato directo
             </span>
             <span>
-              <Check size={15} /> Solo Rosario
+              <Check size={15} /> Toda Argentina
             </span>
           </div>
         </div>
@@ -50,7 +51,7 @@ export default async function Home() {
           <div className="strip-item">
             <MapPin size={25} />
             <div>
-              Cerca tuyo<small>Personas y técnicos de Rosario</small>
+              Cerca tuyo<small>Personas y técnicos de Argentina</small>
             </div>
           </div>
           <div className="strip-item">
@@ -73,7 +74,7 @@ export default async function Home() {
             <div>
               <span className="eyebrow">El próximo arreglo empieza acá</span>
               <h2>Equipos buscando otra oportunidad.</h2>
-              <p>Celulares, notebooks y consolas. Todos en Rosario.</p>
+              <p>Celulares, notebooks y consolas. En toda Argentina.</p>
             </div>
             <Link className="text-link" href="/equipos">
               Ver todos los equipos
@@ -95,6 +96,7 @@ export default async function Home() {
           )}
         </div>
       </section>
+      <AdPlacement placement="home" eligible={devices.every(d=>d.ad_eligible)} />
       <section className="section container">
         <span className="eyebrow">Simple, de principio a fin</span>
         <h2>Tu equipo, tus opciones.</h2>
@@ -108,10 +110,10 @@ export default async function Home() {
             </p>
           </div>
           <div>
-            <span className="step-number">02 / CONECTÁ CON ROSARIO</span>
+            <span className="step-number">02 / CONECTÁ CON OTRAS PERSONAS</span>
             <h3>Recibí propuestas locales.</h3>
             <p>
-              Los técnicos suscriptos pueden contactarte para evaluar el equipo y hacerte una
+              Las personas registradas pueden contactarte para evaluar el equipo y hacerte una
               propuesta.
             </p>
           </div>
@@ -136,22 +138,11 @@ export default async function Home() {
               puede estar a unas cuadras.
             </h2>
             <p>
-              Accedé a los contactos de equipos publicados en Rosario. Buscá reparaciones o equipos
+              Accedé a los contactos de equipos publicados en Argentina. Buscá reparaciones o equipos
               para reacondicionar.
             </p>
           </div>
-          <div className="tech-price">
-            <span>Plan Técnico</span>
-            <div>
-              <strong>{money(MONTHLY_ARS)}</strong>
-              <small> ARS / mes</small>
-            </div>
-            <small>Contactos de publicaciones activas. Sin comisiones.</small>
-            <br />
-            <Link className="button lime" href="/suscripcion">
-              Conocer el plan
-            </Link>
-          </div>
+          <div className="tech-price"><strong>Gratis para todos</strong><p>Publicá, conversá y recibí ofertas sin pagar comisiones.</p><Link className="button lime" href="/equipos">Encontrar equipos</Link></div>
         </div>
       </section>
     </>

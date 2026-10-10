@@ -1,4 +1,4 @@
-export function DeviceSpecFields() {
+export function DeviceSpecFields({initial}:{initial?:Record<string,string>}) {
   return (
     <fieldset className="panel">
       <legend>Estado declarado del equipo</legend>
@@ -18,7 +18,7 @@ export function DeviceSpecFields() {
           <label className="field" key={k}>
             {v}
             <input
-              name={k}
+              name={k} defaultValue={initial?.[k]}
               required
               maxLength={
                 k === 'storage_capacity'
@@ -32,7 +32,7 @@ export function DeviceSpecFields() {
         ))}
         <label className="field">
           ¿Enciende?
-          <select name="power_on">
+          <select name="power_on" defaultValue={initial?.power_on}>
             <option value="desconocido">No comprobado</option>
             <option value="si">Sí</option>
             <option value="no">No</option>
@@ -40,7 +40,7 @@ export function DeviceSpecFields() {
         </label>
         <label className="field">
           Bloqueo de activación, cuentas y restricciones
-          <select name="activation_lock">
+          <select name="activation_lock" defaultValue={initial?.activation_lock}>
             <option value="desconocido">No comprobado</option>
             <option value="libre">Declaro que no tiene bloqueos</option>
             <option value="bloqueado">Tiene bloqueos / cuentas asociadas</option>
@@ -48,11 +48,11 @@ export function DeviceSpecFields() {
         </label>
         <label className="field">
           Precio solicitado (ARS, opcional para reparación)
-          <input name="asking_price" type="number" min="1" max="999999999" step="0.01" />
+          <input name="asking_price" defaultValue={initial?.asking_price} type="number" min="1" max="999999999" step="0.01" />
         </label>
         <label className="field">
           Entrega
-          <select name="delivery">
+          <select name="delivery" defaultValue={initial?.delivery}>
             <option value="presencial">Retiro presencial</option>
             <option value="envio">Envío</option>
             <option value="ambas">Ambas</option>
@@ -60,19 +60,19 @@ export function DeviceSpecFields() {
         </label>
         <label className="field">
           Identificador privado, opcional
-          <input name="identifier" minLength={5} maxLength={32} autoComplete="off" />
+          <input name="identifier" defaultValue={initial?.identifier} minLength={5} maxLength={32} autoComplete="off" />
           <small>Solo vos y administración. No verifica titularidad.</small>
         </label>
         <label className="field">
           Tipo
-          <select name="identifier_kind">
+          <select name="identifier_kind" defaultValue={initial?.identifier_kind}>
             <option value="imei">IMEI (15 dígitos)</option>
             <option value="serial">Número de serie</option>
           </select>
         </label>
       </div>
       <label className="check">
-        <input name="accepts_offers" type="checkbox" defaultChecked />
+        <input name="accepts_offers" type="checkbox" defaultChecked={initial?.accepts_offers!=='false'} />
         Acepto ofertas
       </label>
       <p>

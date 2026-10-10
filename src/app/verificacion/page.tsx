@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getProfile } from '@/lib/data';
 import { db } from '@/lib/supabase/server';
 import { verificationLabels } from '@/lib/commerce';
-import { CommerceForm } from '@/components/commerce-form';
+import { MarketForm } from '@/components/market-form';
 export default async function Verification() {
   const p = await getProfile();
   if (!p) redirect('/ingresar');
@@ -21,7 +21,7 @@ export default async function Verification() {
           fotos de documentos por formularios ni mensajes. Solicitar revisión no otorga una
           insignia.
         </p>
-        <CommerceForm
+        <MarketForm
           action="request_verification"
           label="Registrar mi solicitud de verificación"
         />

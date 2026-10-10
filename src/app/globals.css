@@ -912,3 +912,6 @@ footer {
 .panel, .notice, .admin-row { overflow-wrap: anywhere; min-width: 0; }
 fieldset.panel { border: 1px solid var(--border, #dce3dc); }
 @media (max-width:720px) { .nav nav { flex-wrap:wrap; } .nav nav > a:not(.button) { display:inline-flex; } }
+
+.ad-placement { min-height: 280px; margin: 48px auto; padding: 20px; max-width: 1100px; background: #f7f8f6; text-align:center; }
+.ad-placement small { display:block; margin-bottom:16px; color:#616c62; }

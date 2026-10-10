@@ -8,19 +8,21 @@ import { categories, intents, faults } from '@/lib/config';
 import { preparePhoto } from '@/lib/prepare-photo';
 import type { ActionState } from '@/lib/types';
 export function DeviceForm({
+  initial,
   admin = false,
   initialModel = '',
   initialFault = 'pantalla_rota',
 }: {
+  initial?: Record<string, string>;
   admin?: boolean;
   initialModel?: string;
   initialFault?: string;
 }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(async (previous, form) => {
     const files = form.getAll('photos').filter((f): f is File => f instanceof File && f.size > 0);
-    if (files.length > 6) return { error: 'Elegí hasta 6 fotos.' };
+    if (files.length + form.getAll('photo_paths').length > 6) return { error: 'Elegí hasta 6 fotos.' };
     form.delete('photos');
-    form.delete('photo_paths');
+
     try {
       for (const file of files) {
         const photo = new FormData();
@@ -38,11 +40,12 @@ export function DeviceForm({
     <form action={action}>
       <input type="hidden" name="source" value={admin ? 'admin' : 'usuario'} />
       <input type="hidden" name="country_code" value="AR" />
+      {initial?.id && <input type="hidden" name="id" value={initial.id}/>}
       <h2 className="form-heading">01 · El equipo</h2>
       <div className="form-grid">
         <label className="field">
           Categoría
-          <select name="category">
+          <select name="category" defaultValue={initial?.category}>
             {Object.entries(categories).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
@@ -52,7 +55,7 @@ export function DeviceForm({
         </label>
         <label className="field">
           ¿Qué querés hacer?
-          <select name="intent" defaultValue="ambas">
+          <select name="intent" defaultValue={initial?.intent??'ambas'}>
             {Object.entries(intents).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
@@ -64,13 +67,13 @@ export function DeviceForm({
       <div className="form-grid">
         <label className="field">
           Marca
-          <input name="brand" required maxLength={60} placeholder="Ej. Apple, Samsung, Lenovo" />
+          <input name="brand" defaultValue={initial?.brand} required maxLength={60} placeholder="Ej. Apple, Samsung, Lenovo" />
         </label>
         <label className="field">
           Modelo
           <input
             name="model"
-            defaultValue={initialModel}
+            defaultValue={initial?.model??initialModel}
             required
             maxLength={100}
             placeholder="Ej. iPhone 11"
@@ -79,7 +82,7 @@ export function DeviceForm({
       </div>
       <label className="field">
         Falla principal
-        <select name="fault_code" defaultValue={initialFault}>
+        <select name="fault_code" defaultValue={initial?.fault_code??initialFault}>
           {Object.entries(faults).map(([k, v]) => (
             <option key={k} value={k}>
               {v}
@@ -90,7 +93,7 @@ export function DeviceForm({
       <label className="field">
         Contanos qué pasó
         <textarea
-          name="description"
+          name="description" defaultValue={initial?.description}
           required
           minLength={15}
           maxLength={2000}
@@ -98,7 +101,8 @@ export function DeviceForm({
         />
         <small>No incluyas teléfonos, correos ni enlaces en la descripción.</small>
       </label>
-      <DeviceSpecFields />
+      {initial?.photos && JSON.parse(initial.photos).map((path:string)=><label className="check" key={path}><input type="checkbox" name="photo_paths" value={path} defaultChecked/>Conservar foto {path.split('/').pop()?.slice(0,8)}</label>)}
+      <DeviceSpecFields initial={initial} />
       <label className="field">
         Fotos del equipo
         <input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple />
@@ -108,10 +112,10 @@ export function DeviceForm({
         </small>
       </label>
       <div className="form-grid">
-        <LocationFields />
+        <LocationFields city={initial?.city} province={initial?.province}/>
         <label className="field">
           Barrio (opcional)
-          <input name="neighborhood" maxLength={80} placeholder="Ej. Centro" />
+          <input name="neighborhood" defaultValue={initial?.neighborhood} maxLength={80} placeholder="Ej. Centro" />
         </label>
       </div>
       <hr className="divider" />
@@ -121,23 +125,23 @@ export function DeviceForm({
       </p>
       <label className="field">
         Nombre de contacto
-        <input name="contact_name" required minLength={2} maxLength={100} autoComplete="name" />
+        <input name="contact_name" defaultValue={initial?.contact_name} required minLength={2} maxLength={100} autoComplete="name" />
       </label>
       <div className="form-grid">
         <label className="field">
           WhatsApp
-          <input name="whatsapp_e164" type="tel" placeholder="+5493411234567" />
+          <input name="whatsapp_e164" defaultValue={initial?.whatsapp_e164} type="tel" placeholder="+5493411234567" />
           <small>Con prefijo internacional. Completá al menos un contacto.</small>
         </label>
         <label className="field">
           Email
-          <input name="contact_email" type="email" maxLength={254} />
+          <input name="contact_email" defaultValue={initial?.contact_email} type="email" maxLength={254} />
         </label>
       </div>
       {admin && (
         <label className="field">
           Enlace de origen (solo administración)
-          <input name="source_url" type="url" placeholder="https://…" />
+          <input name="source_url" defaultValue={initial?.source_url} type="url" placeholder="https://…" />
         </label>
       )}
       {!admin && <input type="hidden" name="source_url" value="" />}

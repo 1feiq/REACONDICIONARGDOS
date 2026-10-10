@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Analytics } from '@/components/analytics';
 import { Header } from '@/components/header';
 import { configured } from '@/lib/config';
 import './globals.css';
@@ -11,8 +12,10 @@ export const metadata: Metadata = {
     template: '%s · reacondicionargdos',
   },
   description:
-    'Vendé tu equipo roto o encontrá técnicos para repararlo. Conectamos personas de Rosario, sin comisiones por operación.',
+    'Vendé tu equipo roto o encontrá técnicos para repararlo. Marketplace gratuito para toda Argentina, sin comisiones por operación.',
   icons: { icon: '/favicon.svg' },
+  verification:{google:process.env.GOOGLE_SITE_VERIFICATION},
+  openGraph:{type:'website',siteName:'REACONDICIONARGDOS',locale:'es_AR'},
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,10 +25,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           Saltar al contenido
         </a>
         <Header />
+        <Analytics />
         {!configured() && (
           <div className="preview-notice">
-            Vista previa · Los equipos y valores de ejemplo no son ofertas reales. Registros y pagos
-            aún no están habilitados.
+            El servicio de publicaciones todavía no está conectado. No se muestran equipos ficticios.
           </div>
         )}
         <main id="main">{children}</main>
@@ -37,12 +40,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <p>
               Más vida para tu tecnología.
               <br />
-              Hecho para conectar Rosario.
+              Hecho para conectar Argentina.
             </p>
             <div>
               <Link href="/equipos">Explorar</Link>
-              <Link href="/suscripcion">Para técnicos</Link>
-              <Link href="/politicas">Privacidad y políticas</Link>
+              <Link href="/guias">Guías para comprar y reparar</Link>
+              <Link href="/privacidad">Privacidad</Link>
+              <Link href="/cookies">Cookies</Link>
+              <Link href="/contacto">Contacto</Link>
+              <Link href="/ayuda">Ayuda</Link>
               <Link href="/terminos">Cómo funciona y condiciones</Link>
             </div>
             <span>

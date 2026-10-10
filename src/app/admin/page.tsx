@@ -18,7 +18,7 @@ export default async function Admin() {
       <div className="page-header split">
         <div>
           <span className="eyebrow">Administración</span>
-          <h1>Publicaciones de Rosario.</h1>
+          <h1>Publicaciones de Argentina.</h1>
           <p>Cargá oportunidades autorizadas y mantené su disponibilidad actualizada.</p>
         </div>
         <div className="actions">
@@ -60,8 +60,8 @@ export default async function Admin() {
           </Link>
         </div>
       )}
-      <Link className="button secondary" href="/admin/comercio">
-        Suscripciones, operaciones y seguridad
+      <Link className="button secondary" href="/admin/moderacion">
+        Moderación, usuarios y publicidad
       </Link>
       <PhotoCleanup />
     </div>

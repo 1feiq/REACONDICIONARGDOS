@@ -1,32 +1,3 @@
-export const orderLabels: Record<string, string> = {
-  pending_payment: 'Pendiente de pago',
-  payment_rejected: 'Pago rechazado',
-  protected: 'Pago confirmado y protegido',
-  preparing: 'Preparando entrega',
-  shipped: 'Despacho declarado por el vendedor',
-  in_transit: 'En tránsito',
-  delivered: 'Entregado',
-  review: 'En período de revisión',
-  accepted: 'Compra aceptada; liberación pendiente',
-  disputed: 'Reclamo abierto',
-  resolution_pending: 'Resolución pendiente',
-  return_requested: 'Devolución solicitada',
-  return_shipped: 'Devolución despachada',
-  return_received: 'Devolución recibida',
-  refunded: 'Reembolso confirmado',
-  released: 'Pago liberado al vendedor',
-  canceled: 'Cancelado',
-};
-export const disputeReasons = {
-  empty_package: 'Paquete vacío',
-  wrong_product: 'Producto diferente',
-  not_received: 'Producto no recibido',
-  identifier_mismatch: 'IMEI o serie diferente',
-  activation_lock: 'Bloqueo no informado',
-  omitted_fault: 'Falla importante omitida',
-  damage: 'Daños distintos de los descritos',
-  fraud: 'Sospecha fundamentada de fraude',
-};
 export const verificationLabels: Record<string, string> = {
   unverified: 'Sin verificar',
   pending: 'Verificación pendiente',

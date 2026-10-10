@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { db } from '@/lib/supabase/server';
-import { CommerceForm } from './commerce-form';
+import { MarketForm } from './market-form';
 import { money } from '@/lib/config';
 import { verificationLabels } from '@/lib/commerce';
 export async function DeviceSafety({ id, owner }: { id: string; owner?: string | null }) {
@@ -66,13 +66,9 @@ export async function DeviceSafety({ id, owner }: { id: string; owner?: string |
         </p>
       )}
       <p>
-        Operación directa sin cobertura de la plataforma. Compra Protegida todavía no está
-        habilitada.
+        Operación directa: acordás el pago y la entrega con la otra persona. No hay cobertura financiera de la plataforma.
       </p>
-      <Link className="button secondary" href={'/comprar/' + id}>
-        Consultar Compra Protegida
-      </Link>
-      <CommerceForm id={id} action="report" label="Reportar publicación" text />
+      <MarketForm id={id} action="report" label="Reportar publicación" text />
     </section>
   );
 }
