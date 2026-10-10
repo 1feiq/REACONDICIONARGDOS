@@ -1,6 +1,5 @@
 import 'server-only';
 import { db } from './supabase/server';
-import { demoDevices, demoCatalog } from './demo';
 import type { Device, Catalog } from './types';
 import { redirect, notFound } from 'next/navigation';
 export async function requireAdmin() {
@@ -20,11 +19,12 @@ function photoUrls(device: Device): Device {
 }
 export async function getDevices(): Promise<Device[]> {
   const client = await db();
-  if (!client) return demoDevices;
+  if (!client) return [];
   const { data, error } = await client
     .from('devices')
-    .select('*')
+    .select('*,device_specs(asking_price)')
     .eq('status', 'publicado')
+    .eq('moderation_status','approved')
     .order('created_at', { ascending: false })
     .limit(90);
   if (error) throw new Error('No pudimos cargar los equipos. Intentá nuevamente.');
@@ -32,7 +32,7 @@ export async function getDevices(): Promise<Device[]> {
 }
 export async function getCatalog(): Promise<Catalog[]> {
   const client = await db();
-  if (!client) return demoCatalog;
+  if (!client) return [];
   const { data, error } = await client
     .from('pricing_catalog')
     .select('*')
@@ -50,7 +50,7 @@ export async function getProfile() {
   if (!user) return null;
   const { data, error } = await client
     .from('users')
-    .select('id,display_name,role')
+    .select('id,display_name,role,city,province,verification_status')
     .eq('id', user.id)
     .single();
   if (error) return null;
@@ -58,7 +58,7 @@ export async function getProfile() {
 }
 export async function getDevice(id: string): Promise<Device | null> {
   const client = await db();
-  if (!client) return demoDevices.find((d) => d.id === id) ?? null;
+  if (!client) return null;
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const { data, error } = await client.from('devices').select('*').eq('id', id).maybeSingle();
   if (error) throw new Error('No pudimos consultar el equipo.');

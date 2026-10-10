@@ -33,7 +33,7 @@ export function ContactReveal({ id }: { id: string }) {
         <form action={action}>
           <h3>Contactá al titular</h3>
           <p>
-            El Plan Técnico permite consultar hasta 30 contactos distintos cada 24 horas. No está
+            El contacto es gratuito. Para prevenir extracción masiva, hay un límite de 30 contactos distintos cada 24 horas para todas las cuentas. No está
             permitida su extracción masiva ni su reventa.
           </p>
           <input type="hidden" name="id" value={id} />

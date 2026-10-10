@@ -12,7 +12,7 @@ export default async function Publish({
       <div className="page-header">
         <span className="eyebrow">Publicar es 100% gratis</span>
         <h1>Dale otra oportunidad.</h1>
-        <p>Contá qué le pasó a tu equipo y conectá con técnicos de Rosario.</p>
+        <p>Contá qué le pasó a tu equipo y conectá con técnicos de Argentina.</p>
       </div>
       {!profile ? (
         <div className="panel">

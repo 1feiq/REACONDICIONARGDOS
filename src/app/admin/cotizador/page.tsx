@@ -15,7 +15,7 @@ export default async function AdminPricing() {
         <span className="eyebrow">Cotizador</span>
         <h1>Valores de referencia.</h1>
         <p>
-          Ingresá rangos verificados en Rosario. La misma combinación de marca, modelo y falla
+          Ingresá rangos verificados en Argentina. La misma combinación de marca, modelo y falla
           actualiza su registro.
         </p>
       </div>

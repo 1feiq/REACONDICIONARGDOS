@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { provinces } from './config';
 const optionalEmail = z.union([z.email().max(254), z.literal('')]);
 export const deviceSchema = z
   .object({
@@ -8,7 +9,9 @@ export const deviceSchema = z
     intent: z.enum(['vender', 'reparar', 'ambas']),
     fault_code: z.enum(['pantalla_rota', 'bateria', 'no_enciende', 'carga', 'otro']),
     description: z.string().trim().min(15, 'Contá la falla con al menos 15 caracteres.').max(2000),
-    city: z.literal('Rosario'),
+    city: z.string().trim().min(2).max(80),
+    province: z.enum(provinces),
+    country_code:z.literal('AR'),
     neighborhood: z.string().max(80),
     contact_name: z.string().trim().min(2).max(100),
     whatsapp_e164: z.union([

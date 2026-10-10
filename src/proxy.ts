@@ -21,4 +21,4 @@ export async function proxy(request: NextRequest) {
   await client.auth.getUser();
   return response;
 }
-export const config = { matcher: ['/((?!_next/static|_next/image|favicon.svg|api/webhooks).*)'] };
+export const config = { matcher: ['/((?!_next/static|_next/image|favicon.svg|ads.txt|sitemap.xml|robots.txt).*)'] };

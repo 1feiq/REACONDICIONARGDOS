@@ -33,8 +33,7 @@ export async function ListingAlerts({ userId }: { userId: string }) {
     <section className="panel" style={{ marginBottom: 30 }}>
       <h2>Alertas de publicaciones</h2>
       <p>
-        Guardá una categoría y revisá las novedades aquí. Los contactos siguen protegidos por el
-        Plan Técnico.
+        Guardá una categoría y revisá las novedades gratis en tu cuenta.
       </p>
       <AlertPreferences
         category={preference?.category ?? 'todas'}

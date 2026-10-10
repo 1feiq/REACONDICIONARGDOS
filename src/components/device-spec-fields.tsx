@@ -53,7 +53,7 @@ export function DeviceSpecFields() {
         <label className="field">
           Entrega
           <select name="delivery">
-            <option value="presencial">Presencial en Rosario</option>
+            <option value="presencial">Retiro presencial</option>
             <option value="envio">Envío</option>
             <option value="ambas">Ambas</option>
           </select>

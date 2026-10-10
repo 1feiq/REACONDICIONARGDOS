@@ -1,4 +1,5 @@
 export type Device = {
+  city?:string; province?:string; moderation_status?:string; ad_eligible?:boolean; device_specs?:{asking_price:number|null};
   id: string;
   category: 'celular' | 'notebook' | 'consola';
   brand: string;

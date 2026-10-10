@@ -20,7 +20,7 @@ export default async function Account() {
         <div>
           <span className="eyebrow">Tu espacio en reacondicionargdos</span>
           <h1>Hola, {profile.display_name}.</h1>
-          <p>{profile.email} · Rosario</p>
+          <p>{profile.email} · {profile.city}, {profile.province}</p>
         </div>
         <form action={signOut}>
           <button className="button secondary">Cerrar sesión</button>
@@ -30,11 +30,9 @@ export default async function Account() {
         <Link className="button" href="/publicar">
           Publicar equipo
         </Link>
-        <Link className="button secondary" href="/suscripcion">
-          Mi suscripción
-        </Link>
-        <Link className="button secondary" href="/operaciones">
-          Compras, ventas y reclamos
+        <Link className="button secondary" href="/favoritos">Mis favoritos</Link>
+        <Link className="button secondary" href="/mensajes">
+          Mensajes y ofertas
         </Link>
         <Link className="button secondary" href="/verificacion">
           Verificación
@@ -56,7 +54,7 @@ export default async function Account() {
                   {d.brand} {d.model}
                 </h3>
               </Link>
-              <small>{d.status}</small>
+              <small>{d.status}</small><p><Link href={`/publicar/${d.id}/editar`}>Editar publicación</Link></p>
             </div>
             <StatusForm id={d.id} status={d.status} />
           </div>

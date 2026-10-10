@@ -2,6 +2,7 @@
 import { db } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { provinces } from '@/lib/config';
 import type { ActionState } from '@/lib/types';
 export async function sendAccessLink(_: ActionState, form: FormData): Promise<ActionState> {
   const client = await db();
@@ -12,19 +13,20 @@ export async function sendAccessLink(_: ActionState, form: FormData): Promise<Ac
       email: z.email(),
       display_name: z.string().trim().min(2).max(100),
       role: z.enum(['cliente', 'tecnico']),
-      city: z.literal('Rosario'),
+      city: z.string().trim().min(2).max(80),
+      province:z.enum(provinces),
     })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: 'Revisá tu nombre, correo y localidad.' };
   if (form.get('consent') !== 'on')
-    return { error: 'Confirmá las condiciones y que operás en Rosario.' };
+    return { error: 'Confirmá las condiciones de uso.' };
   const origin = process.env.APP_URL;
   if (!origin) return { error: 'El registro todavía no está habilitado.' };
   const { error } = await client.auth.signInWithOtp({
     email: parsed.data.email,
     options: {
       emailRedirectTo: `${origin}/auth/confirm`,
-      data: { display_name: parsed.data.display_name, role: parsed.data.role },
+      data: { display_name: parsed.data.display_name, role: parsed.data.role, city:parsed.data.city, province:parsed.data.province },
     },
   });
   return error
@@ -38,11 +40,4 @@ export async function signOut() {
   const client = await db();
   await client?.auth.signOut();
   redirect('/');
-}
-export async function becomeTechnician() {
-  const client = await db();
-  if (!client) redirect('/ingresar');
-  const { error } = await client.rpc('become_technician');
-  if (error) redirect('/ingresar');
-  redirect('/suscripcion');
 }

@@ -1,4 +1,5 @@
 'use client';
+import { LocationFields } from './location-fields';
 import { DeviceSpecFields } from './device-spec-fields';
 import { useActionState } from 'react';
 import Link from 'next/link';
@@ -36,7 +37,7 @@ export function DeviceForm({
   return (
     <form action={action}>
       <input type="hidden" name="source" value={admin ? 'admin' : 'usuario'} />
-      <input type="hidden" name="city" value="Rosario" />
+      <input type="hidden" name="country_code" value="AR" />
       <h2 className="form-heading">01 · El equipo</h2>
       <div className="form-grid">
         <label className="field">
@@ -107,10 +108,7 @@ export function DeviceForm({
         </small>
       </label>
       <div className="form-grid">
-        <label className="field">
-          Localidad
-          <input value="Rosario, Santa Fe" disabled />
-        </label>
+        <LocationFields />
         <label className="field">
           Barrio (opcional)
           <input name="neighborhood" maxLength={80} placeholder="Ej. Centro" />
@@ -119,7 +117,7 @@ export function DeviceForm({
       <hr className="divider" />
       <h2 className="form-heading">02 · Contacto protegido</h2>
       <p style={{ fontSize: '.9rem' }}>
-        Solo los técnicos con una suscripción vigente podrán ver estos datos.
+        Las personas registradas podrán consultar estos datos gratis, con límites contra abuso.
       </p>
       <label className="field">
         Nombre de contacto
@@ -147,8 +145,8 @@ export function DeviceForm({
         <input name="permission" type="checkbox" required={!admin} />
         <span>
           {admin
-            ? 'Tengo autorización del titular para publicar el equipo y compartir su contacto con técnicos suscriptos. Confirmé que sigue disponible.'
-            : 'Autorizo la publicación de mi equipo y que los técnicos suscriptos accedan a mi contacto. Confirmo que está en Rosario y acepto las condiciones de uso.'}
+            ? 'Tengo autorización del titular para publicar el equipo y compartir su contacto con usuarios registrados. Confirmé que sigue disponible.'
+            : 'Autorizo la publicación de mi equipo y que los usuarios registrados accedan a mi contacto. Confirmo que está en Argentina y acepto las condiciones de uso.'}
         </span>
       </label>
       {admin ? (

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Smartphone, Laptop, Gamepad2, Lock, MapPin, TriangleAlert } from 'lucide-react';
+import { Smartphone, Laptop, Gamepad2, MapPin, TriangleAlert } from 'lucide-react';
 import { faults } from '@/lib/config';
 import type { Device } from '@/lib/types';
 export function DeviceVisual({ device }: { device: Device }) {
@@ -32,9 +32,9 @@ export function DeviceCard({ device }: { device: Device }) {
         <div className="device-meta">
           <span style={{ display: 'flex', gap: 4 }}>
             <MapPin size={13} />
-            {device.neighborhood || 'Rosario'}
+            {device.city || 'Argentina'}
           </span>
-          <span>{device.source === 'demo' ? 'Vista previa' : 'Rosario'}</span>
+          <span>{device.province}</span>
         </div>
         <h3>
           {device.brand} {device.model}
@@ -45,7 +45,7 @@ export function DeviceCard({ device }: { device: Device }) {
         </span>
         <div className="device-bottom">
           <span className="locked">
-            <Lock size={14} /> Contacto exclusivo
+            Contacto gratuito
           </span>
           <span className="text-link">Ver equipo</span>
         </div>

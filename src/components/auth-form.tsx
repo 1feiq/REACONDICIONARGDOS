@@ -1,4 +1,5 @@
 'use client';
+import { LocationFields } from './location-fields';
 import { useActionState } from 'react';
 import { sendAccessLink } from '@/app/actions/auth';
 export function AuthForm() {
@@ -33,15 +34,11 @@ export function AuthForm() {
           <option value="tecnico">Soy técnico / reacondicionador</option>
         </select>
       </label>
-      <label className="field">
-        Localidad
-        <input value="Rosario, Santa Fe" disabled />
-      </label>
-      <input name="city" value="Rosario" type="hidden" />
+      <LocationFields />
       <label className="check">
         <input name="consent" type="checkbox" required />
         <span>
-          Opero en Rosario y acepto las{' '}
+          Acepto las{' '}
           <a href="/terminos" className="text-link">
             condiciones de uso
           </a>

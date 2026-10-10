@@ -11,12 +11,12 @@ export function Header() {
           reacondicionargdos
         </Link>
         <span className="location">
-          <MapPin size={15} /> Rosario, Santa Fe
+          <MapPin size={15} /> Argentina
         </span>
         <nav aria-label="Navegación principal">
           <Link href="/equipos">Explorar equipos</Link>
-          <Link href="/compra-protegida">Protección</Link>
-          <Link href="/suscripcion">Soy técnico</Link>
+          <Link href="/guias">Guías</Link>
+          <Link href="/mensajes">Mensajes</Link>
           <Link href="/cuenta" className="nav-account">
             Mi cuenta
           </Link>

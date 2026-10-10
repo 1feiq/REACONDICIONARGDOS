@@ -14,7 +14,7 @@ export async function revealContact(_: ContactState, form: FormData): Promise<Co
     return {
       error: error.message.includes('contact_daily_limit')
         ? 'Alcanzaste los 30 contactos distintos en las últimas 24 horas. Intentá más tarde.'
-        : 'Necesitás una suscripción vigente y una publicación activa para ver el contacto.',
+        : 'Ingresá a tu cuenta. El contacto debe estar activo y autorizado para el marketplace gratuito.',
     };
   return data?.[0] ? { contact: data[0] } : { error: 'Este contacto ya no está disponible.' };
 }
